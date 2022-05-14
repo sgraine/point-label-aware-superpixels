@@ -1,4 +1,4 @@
-# Repository for Point Label Aware Superpixels Code
+# Repository for Point Label Aware Superpixels
 The official repository for the paper: 'Point Label Aware Superpixels for Multi-species Segmentation of Underwater Imagery'
 
 \[[arXiv](https://arxiv.org/abs/2202.134874)]
