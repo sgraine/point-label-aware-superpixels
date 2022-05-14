@@ -49,14 +49,6 @@ You can alter the functionality of the method using the following arguments:
 
 ## Example Execution - UCSD Mosaics Dataset
 
-**Original Image:**
-![FR3_2048_2560_512_1024](https://user-images.githubusercontent.com/50187455/168423381-20f6a518-9018-42bc-923a-c101dd4479be.png)
-
-**Ground Truth:**
-![FR3_2048_2560_512_1024_gt](https://user-images.githubusercontent.com/50187455/168423343-9a3f250b-d400-4618-98cb-151f048b3e32.png)
-
-**Our Propagated Mask using just 300 sparse labels:**
-![FR3_2048_2560_512_1024_ours_coloured](https://user-images.githubusercontent.com/50187455/168423342-eecd3ef9-13f4-4c0d-8111-cccbc102ec64.png)
 
 
 <a name="acknowledgements"></a>
