@@ -57,10 +57,13 @@ We suggest using the Anaconda package manager to install dependencies.
 
 <a name="getting-started"></a>
 ## Getting Started
-Ensure you have a folder with images and another folder with the ground truth.  This can be in the form of dense masks or sparse, randomly distributed point labels.
+Ensure you have a folder with images and another folder with corresponding ground truth masks.  The ground truth can be dense, pixel wise masks or sparse, randomly distributed point labels.
+
 If your data is dense, the script will generate a set of sparse labels. If you have a class for 'unlabeled' or similar, it will still be used in generating the augmented ground truth, however it will not be used in calculating the accuracy. 
 
-The script will save the augmented ground truth masks in the specified directory as .png images, where each value indicates the class at that pixel in the correponding image.
+The script will save the augmented ground truth masks in the specified directory as .png images, where each value indicates the class at that pixel in the correponding image.  
+
+For the best performance, make sure to use the '--ensemble' flag, which means our approach uses an ensemble of three classifiers.  If you need to prioritize speed over accuracy, then leaving this out means that only a single classifier will be used.
 
 Run the script using:
 
@@ -89,6 +92,8 @@ The following are optional arguments: the default values correspond to the UCSD 
 An example: This is for the UCSD Mosaics dataset which is a densely labeled dataset (the script will randomly select the sparse point labels), saving RGB augmented ground truth masks, using the ensemble of classifiers and using 100 point labels per image.
 
 ```python propagate.py -r "D:\\Mosaics UCSD dataset\\Mosaics UCSD dataset\\Mosaicos\\images\\train" -g "D:\\Mosaics UCSD dataset\\Mosaics UCSD dataset\\Mosaicos\\labels\\train" -l "D:\\Mosaics UCSD dataset\\Mosaics UCSD dataset\\Mosaicos\\test" -p "D:\\Mosaics UCSD dataset\\Mosaics UCSD dataset\\Mosaicos\\test_rgb" --ensemble --num_labels 100```
+
+The UCSD Mosaics dataset can be downloaded from the authors of the CoralSeg paper: \[[Dataset](https://sites.google.com/a/unizar.es/semanticseg/home)]
 
 <a name="acknowledgements"></a>
 ## Acknowledgements
