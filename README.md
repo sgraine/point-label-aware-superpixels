@@ -30,19 +30,30 @@ Point Label Aware Superpixels for Multi-species Segmentation of Underwater Image
 We suggest using the Anaconda package manager to install dependencies.
 
 1. Download Anaconda
-2. Download and save the provided spix_environment.yml file
+2. Download and save the provided spix_environment.yml file in your directory
 3. Create the environment using:
 ```conda env create -f spix_environment.yml ```
 
 **Alternative Method**
 
 1. Download Anaconda
-2. Create a conda environment: conda create -n pointlabelspix python=3.9.9 pip
-3. Activate the environment: conda activate pointlabelspix
-4. Install packages and libraries:
+2. Create a conda environment: 
+
+```conda create -n pointlabelspix python=3.9.9 ```
+
+4. Activate the environment: 
+
+```conda activate pointlabelspix```
+
+6. Install packages and libraries:
+
+
 ```conda install pytorch torchvision cudatoolkit=11.3 -c pytorch ```
+
 ```conda install -c conda-forge matplotlib==3.5.1 scikit-image==0.19.1 scipy==1.7.3 torchmetrics```
+
 ```conda install pyg -c pyg```
+
 
 <a name="getting-started"></a>
 ## Getting Started
