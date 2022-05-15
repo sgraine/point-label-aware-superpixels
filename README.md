@@ -41,11 +41,11 @@ We suggest using the Anaconda package manager to install dependencies.
 
 ```conda create -n pointlabelspix python=3.9.9 ```
 
-4. Activate the environment: 
+3. Activate the environment: 
 
 ```conda activate pointlabelspix```
 
-6. Install packages and libraries:
+4. Install packages and libraries:
 
 
 ```conda install pytorch torchvision cudatoolkit=11.3 -c pytorch ```
@@ -59,6 +59,8 @@ We suggest using the Anaconda package manager to install dependencies.
 ## Getting Started
 Ensure you have a folder with images and another folder with the ground truth.  This can be in the form of dense masks or sparse, randomly distributed point labels.
 If your data is dense, the script will generate a set of sparse labels. If you have a class for 'unlabeled' or similar, it will still be used in generating the augmented ground truth, however it will not be used in calculating the accuracy. 
+
+The script will save the augmented ground truth masks in the specified directory as .png images, where each value indicates the class at that pixel in the correponding image.
 
 Run the script using:
 
