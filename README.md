@@ -67,9 +67,9 @@ Run the script using:
 ```python propagate.py```
 
 You must provide the following arguments:
-* '-r', '--read_im', type=str, help='the path to the images', required=True
-* '-g', '--read_gt', type=str, help='the path to the provided labels', required=True
-* '-l', '--save_labels', type=str, help='the destination of your propagated labels', required=True
+* '-r', '-read_im', type=str, help='the path to the images', required=True
+* '-g', '-read_gt', type=str, help='the path to the provided labels', required=True
+* '-l', '-save_labels', type=str, help='the destination of your propagated labels', required=True
 
 Use the following to change the functionality:
 * '--ensemble', action='store_true', dest='ensemble', help='use this flag when you would like to use an ensemble of 3 classifiers, otherwise the default is to use a single classifier'
