@@ -65,6 +65,9 @@ The script will save the augmented ground truth masks in the specified directory
 
 For the best performance, make sure to use the '--ensemble' flag, which means our approach uses an ensemble of three classifiers.  If you need to prioritize speed over accuracy, then leaving this out means that only a single classifier will be used.
 
+Download the weights for our feature extractor here: \[[Feature Extractor](https://drive.google.com/file/d/1F7325ISXUTppWbO5_3eopOf7rEhgfJdP/view?usp=sharing)]
+Make sure the file is in the same location as the other scripts.
+
 Run the script using:
 
 ```python propagate.py```
