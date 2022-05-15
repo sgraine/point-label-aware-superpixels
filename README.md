@@ -23,7 +23,6 @@ Point Label Aware Superpixels for Multi-species Segmentation of Underwater Image
 ## Table of Contents
 - [Installation](#installation)
 - [Getting Started](#getting-started)
-- [Example](#example)
 - [Acknowledgements](#acknowledgements)
 
 <a name="installation"></a>
@@ -43,24 +42,40 @@ We suggest using the Anaconda package manager to install dependencies.
 4. Install packages and libraries:
 ```conda install pytorch torchvision cudatoolkit=11.3 -c pytorch ```
 ```conda install -c conda-forge matplotlib==3.5.1 scikit-image==0.19.1 scipy==1.7.3 torchmetrics```
-```pip install torch-scatter```
-
+```conda install pyg -c pyg```
 
 <a name="getting-started"></a>
 ## Getting Started
 Ensure you have a folder with images and another folder with the ground truth.  This can be in the form of dense masks or sparse, randomly distributed point labels.
-If your data is dense, the script will generate a set of sparse labels. 
+If your data is dense, the script will generate a set of sparse labels. If you have a class for 'unlabeled' or similar, it will still be used in generating the augmented ground truth, however it will not be used in calculating the accuracy. 
 
 Run the script using:
 
 ```python propagate.py```
 
-You can alter the functionality of the method using the following arguments:
+You must provide the following arguments:
+* '-r', '--read_im', type=str, help='the path to the images', required=True
+* '-g', '--read_gt', type=str, help='the path to the provided labels', required=True
+* '-l', '--save_labels', type=str, help='the destination of your propagated labels', required=True
 
+Use the following to change the functionality:
+* '--ensemble', action='store_true', dest='ensemble', help='use this flag when you would like to use an ensemble of 3 classifiers, otherwise the default is to use a single classifier'
+* '--points', action='store_true', dest='points', help='use this flag when your labels are already sparse, otherwise the default is dense'
 
-## Example Execution - UCSD Mosaics Dataset
+The following are optional arguments: the default values correspond to the UCSD Mosaics dataset
+* '-p', '--save_rgb', type=str, help='the destination of your RGB propagated labels'
+* '-x', '--xysigma', type=float, default=0.631, help='if NOT using ensemble and if you want to specify the sigma value for the xy component'
+* '-f', '--cnnsigma', type=float, default=0.5534, help='if NOT using ensemble and if you want to specify the sigma value for the cnn component'
+* '-a', '--alpha', type=float, default=1140, help='if NOT using ensemble and if you want to specify the alpha value for weighting the conflict loss'
+* '-n', '--num_labels', type=int, default=300, help='if labels are dense, specify how many random point labels you would like to use, default is 300'
+* '-y', '--height', type=int, default=512, help='height in pixels of images'
+* '-w', '--width', type=int, default=512, help='width in pixels of images'
+* '-c', '--num_classes', type=int, default=35, help='the number of classes in the dataset'
+* '-u', '--unlabeled', type=int, default=34, help='the index of the unlabeled/unknown/background class'
 
+An example: This is for the UCSD Mosaics dataset which is a densely labeled dataset (the script will randomly select the sparse point labels), saving RGB augmented ground truth masks, using the ensemble of classifiers and using 100 point labels per image.
 
+```python propagate.py -r "D:\\Mosaics UCSD dataset\\Mosaics UCSD dataset\\Mosaicos\\images\\train" -g "D:\\Mosaics UCSD dataset\\Mosaics UCSD dataset\\Mosaicos\\labels\\train" -l "D:\\Mosaics UCSD dataset\\Mosaics UCSD dataset\\Mosaicos\\test" -p "D:\\Mosaics UCSD dataset\\Mosaics UCSD dataset\\Mosaicos\\test_rgb" --ensemble --num_labels 100```
 
 <a name="acknowledgements"></a>
 ## Acknowledgements
