@@ -83,9 +83,8 @@ class CustomLoss(nn.Module):
         self.labels = labels
         self.num_pixels_used = num_pixels_used
 
-    def forward(self, flag=True):
+    def forward(self):
         # computes the distortion loss of the superpixels and also our novel conflict loss
-        # Note: flag allows calculation of the distortion loss from sparse pixels to reduce computation time (this is the num_pixels_used param)
         #
         # INPUTS:
         # 1) features:      (torch.FloatTensor: shape = [B, N, C]) defines for each image the set of pixel features
@@ -99,30 +98,21 @@ class CustomLoss(nn.Module):
         indexes = torch.randperm(self.N)[:self.num_pixels_used]
 
         ##################################### DISTORTION LOSS #################################################
-        # Calculate the distance between pixels and superpixel centres by expanding our equation: (a-b)^2 = a^2-2ab+b^2
-        if flag: 
-            features_cat_select = self.features_cat[:,indexes,:]
-            dist_sq_cat = torch.cdist(features_cat_select, self.clusters)**2
-        else:
-            dist_sq_cat = torch.cdist(self.features_cat, self.clusters)**2
+        # Calculate the distance between pixels and superpixel centres by expanding our equation: (a-b)^2 = a^2-2ab+b^2 
+        features_cat_select = self.features_cat[:,indexes,:]
+        dist_sq_cat = torch.cdist(features_cat_select, self.clusters)**2
 
         # XY COMPONENT
         clusters_xy = self.clusters[:,:,0:2]
 
-        if flag:
-            XY_features_select = self.XY_features[:,indexes,:]
-            dist_sq_xy = torch.cdist(XY_features_select, clusters_xy)**2
-        else:
-            dist_sq_xy = torch.cdist(self.XY_features, clusters_xy)**2
+        XY_features_select = self.XY_features[:,indexes,:]
+        dist_sq_xy = torch.cdist(XY_features_select, clusters_xy)**2
 
         # CNN COMPONENT
         clusters_cnn = self.clusters[:,:,2:]
 
-        if flag:
-            CNN_features_select = self.CNN_features[:,indexes,:]
-            dist_sq_cnn = torch.cdist(CNN_features_select, clusters_cnn)**2
-        else:
-            dist_sq_cnn = torch.cdist(self.CNN_features, clusters_cnn)**2
+        CNN_features_select = self.CNN_features[:,indexes,:]
+        dist_sq_cnn = torch.cdist(CNN_features_select, clusters_cnn)**2
 
         B, K, _ = self.clusters.shape
         
@@ -133,46 +123,45 @@ class CustomLoss(nn.Module):
 
         distortion_loss = torch.mean(dist_sq_weighted)                                          # shape = [1]
 
-        ###################################### CONFLICT LOSS ###################################################
-        if flag:
-            # print("labels", labels.shape)                                                         # shape = [B, 1, H, W]
-            
-            labels_reshape = self.labels.permute(0,2,3,1).float()                                   # shape = [B, H, W, 1]   
+    ###################################### CONFLICT LOSS ###################################################
+        # print("labels", labels.shape)                                                         # shape = [B, 1, H, W]
+        
+        labels_reshape = self.labels.permute(0,2,3,1).float()                                   # shape = [B, H, W, 1]   
 
-            # Find the indexes of the class labels larger than 0 (0 is means unknown class)
-            label_locations = torch.gt(labels_reshape, 0).float()                                   # shape = [B, H, W, 1]
-            label_locations_flat = torch.flatten(label_locations, start_dim=1, end_dim=2)           # shape = [B, N, 1]  
+        # Find the indexes of the class labels larger than 0 (0 is means unknown class)
+        label_locations = torch.gt(labels_reshape, 0).float()                                   # shape = [B, H, W, 1]
+        label_locations_flat = torch.flatten(label_locations, start_dim=1, end_dim=2)           # shape = [B, N, 1]  
 
-            XY_features_label = (self.XY_features * label_locations_flat)[0]                        # shape = [N, 2]
-            non_zero_indexes = torch.abs(XY_features_label).sum(dim=1) > 0                          # shape = [N] 
-            XY_features_label_filtered = XY_features_label[non_zero_indexes].unsqueeze(0)           # shape = [1, N_labelled, 2]
-            dist_sq_xy = torch.cdist(XY_features_label_filtered, clusters_xy)**2                    # shape = [1, N_labelled, K]
+        XY_features_label = (self.XY_features * label_locations_flat)[0]                        # shape = [N, 2]
+        non_zero_indexes = torch.abs(XY_features_label).sum(dim=1) > 0                          # shape = [N] 
+        XY_features_label_filtered = XY_features_label[non_zero_indexes].unsqueeze(0)           # shape = [1, N_labelled, 2]
+        dist_sq_xy = torch.cdist(XY_features_label_filtered, clusters_xy)**2                    # shape = [1, N_labelled, K]
 
-            CNN_features_label = (self.CNN_features * label_locations_flat)[0]                      # shape = [N, 15]
-            CNN_features_label_filtered = CNN_features_label[non_zero_indexes].unsqueeze(0)         # shape = [1, N_labelled, 15]
-            dist_sq_cnn = torch.cdist(CNN_features_label_filtered, clusters_cnn)**2                 # shape = [1, N_labelled, K]
+        CNN_features_label = (self.CNN_features * label_locations_flat)[0]                      # shape = [N, 15]
+        CNN_features_label_filtered = CNN_features_label[non_zero_indexes].unsqueeze(0)         # shape = [1, N_labelled, 15]
+        dist_sq_cnn = torch.cdist(CNN_features_label_filtered, clusters_cnn)**2                 # shape = [1, N_labelled, K]
 
-            soft_memberships = F.softmax( (- dist_sq_xy / (2.0 * self.sigma_array_xy**2)) + (- dist_sq_cnn / (2.0 * self.sigma_array_cnn**2)) , dim = 2)          # shape = [B, N_labelled, K]  
-            soft_memberships_T = torch.transpose(soft_memberships, 1, 2)                            # shape = [1, K, N_labelled]
+        soft_memberships = F.softmax( (- dist_sq_xy / (2.0 * self.sigma_array_xy**2)) + (- dist_sq_cnn / (2.0 * self.sigma_array_cnn**2)) , dim = 2)          # shape = [B, N_labelled, K]  
+        soft_memberships_T = torch.transpose(soft_memberships, 1, 2)                            # shape = [1, K, N_labelled]
 
-            labels_flatten = torch.flatten(labels_reshape, start_dim=1, end_dim=2)[0]               # shape = [N, 1]
-            labels_filtered = labels_flatten[non_zero_indexes].unsqueeze(0)                         # shape = [1, N_labelled, 1] 
+        labels_flatten = torch.flatten(labels_reshape, start_dim=1, end_dim=2)[0]               # shape = [N, 1]
+        labels_filtered = labels_flatten[non_zero_indexes].unsqueeze(0)                         # shape = [1, N_labelled, 1] 
 
-            # Use batched matrix multiplication to find the inner product between all of the pixels 
-            innerproducts = torch.bmm(soft_memberships, soft_memberships_T)                         # shape = [1, N_labelled, N_labelled]
+        # Use batched matrix multiplication to find the inner product between all of the pixels 
+        innerproducts = torch.bmm(soft_memberships, soft_memberships_T)                         # shape = [1, N_labelled, N_labelled]
 
-            # Create an array of 0's and 1's based on whether the class of both the pixels are equal or not
-            # If they are the the same class, then we want a 0 because we don't want to add to the loss
-            # If the two pixels are not the same class, then we want a 1 because we want to penalise this
-            check_conflicts_binary = (~torch.eq(labels_filtered, torch.transpose(labels_filtered, 1, 2))).float()      # shape = [1, N_labelled, N_labelled]
+        # Create an array of 0's and 1's based on whether the class of both the pixels are equal or not
+        # If they are the the same class, then we want a 0 because we don't want to add to the loss
+        # If the two pixels are not the same class, then we want a 1 because we want to penalise this
+        check_conflicts_binary = (~torch.eq(labels_filtered, torch.transpose(labels_filtered, 1, 2))).float()      # shape = [1, N_labelled, N_labelled]
 
-            # Multiply these ones and zeros with the innerproduct array
-            # Only innerproducts for pixels with conflicting labels will remain
-            conflicting_innerproducts = torch.mul(innerproducts, check_conflicts_binary)           # shape = [1, N_labelled, N_labelled]
+        # Multiply these ones and zeros with the innerproduct array
+        # Only innerproducts for pixels with conflicting labels will remain
+        conflicting_innerproducts = torch.mul(innerproducts, check_conflicts_binary)           # shape = [1, N_labelled, N_labelled]
 
-            # Find average of the remaining values for the innerproducts 
-            # If we are using batches, then we add this value to our previous stored value for the points loss
-            conflict_loss = torch.mean(conflicting_innerproducts)                                # shape = [1]
+        # Find average of the remaining values for the innerproducts 
+        # If we are using batches, then we add this value to our previous stored value for the points loss
+        conflict_loss = torch.mean(conflicting_innerproducts)                                # shape = [1]
 
         return distortion_loss + self.alpha*conflict_loss, distortion_loss, self.alpha*conflict_loss
 
@@ -619,8 +608,6 @@ if __name__ == "__main__":
 
         # Clear the cache before the next image
         torch.cuda.empty_cache()
-
-        break
 
     print("propagation of point labels is complete!")
 
