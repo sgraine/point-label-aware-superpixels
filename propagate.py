@@ -269,11 +269,11 @@ def prop_to_unlabelled_spix_feat(sparse_labels, connected, features_cnn, H, W):
     labels = []
     image_size = np.shape(mask_np)
     # Iterate through each pixel in the mask
-    for x in range(image_size[0]):
-        for y in range(image_size[1]):
-            if mask_np[x,y]>0:
-                spixel_num = connected[int(x), int(y)]
-                labels.append( [mask_np[x,y]-1, spixel_num, x, y] ) # This is the class !
+    for y in range(image_size[0]):
+        for x in range(image_size[1]):
+            if mask_np[y,x]>0:
+                spixel_num = connected[int(y), int(x)]
+                labels.append( [mask_np[y,x]-1, spixel_num, y, x] ) # This is the class !
     
     # Array containing the labelled pixels - for each we have the label number, the index of the superpixel it falls inside and the x,y coordinate of the random point
     labels_array = np.array(labels)                         # shape = [num_points, 4]
