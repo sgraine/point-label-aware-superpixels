@@ -36,8 +36,9 @@ def members_from_clusters(sigma_val_xy, sigma_val_cnn, XY_features, CNN_features
     
     return soft_memberships
 
-# Function to convert our soft superpixels memberships to hard memberships
-def hard(hard, H, W, K_max, connectivity = True):
+# Function to take the maximum class likelihood per pixel and enforces connectivity within regions
+# This function also absorbs tiny segments into larger segments based on the 'min size' calculation
+def enforce_connectivity(hard, H, W, K_max, connectivity = True):
     # INPUTS
     # 1. posteriors:    shape = [B, N, K]
     B = 1
@@ -123,7 +124,7 @@ class CustomLoss(nn.Module):
 
         distortion_loss = torch.mean(dist_sq_weighted)                                          # shape = [1]
 
-    ###################################### CONFLICT LOSS ###################################################
+        ###################################### CONFLICT LOSS ###################################################
         # print("labels", labels.shape)                                                         # shape = [B, 1, H, W]
         
         labels_reshape = self.labels.permute(0,2,3,1).float()                                   # shape = [B, H, W, 1]   
@@ -279,7 +280,6 @@ def prop_to_unlabelled_spix_feat(sparse_labels, connected, features_cnn, H, W):
 
     spix_labels = []
     # Iterate through the superpixels in our image
-    # for spix in np.unique(connected):
     for spix_i in range(len(np.unique(connected))):
         # If that superpixel is already labelled, then let's add that to our list of labelled superpixels
         spix = np.unique(connected)[spix_i]
@@ -547,9 +547,9 @@ if __name__ == "__main__":
             # Clear some extra variables from the memory
             del best_members_1, best_members_2, best_members_3
 
-            connected_1 = hard(best_members_1_max, h, w, k, connectivity = True)  # connectivity=True normally                       # shape = [H, W]
-            connected_2 = hard(best_members_2_max, h, w, k, connectivity = True)  # connectivity=True normally                       # shape = [H, W]
-            connected_3 = hard(best_members_3_max, h, w, k, connectivity = True)  # connectivity=True normally                       # shape = [H, W]
+            connected_1 = enforce_connectivity(best_members_1_max, h, w, k, connectivity = True)  # connectivity=True normally                       # shape = [H, W]
+            connected_2 = enforce_connectivity(best_members_2_max, h, w, k, connectivity = True)  # connectivity=True normally                       # shape = [H, W]
+            connected_3 = enforce_connectivity(best_members_3_max, h, w, k, connectivity = True)  # connectivity=True normally                       # shape = [H, W]
 
             # If there are unlabelled superpixels, we propagate the class of the superpixel with the most similar features
             prop_1 = prop_to_unlabelled_spix_feat(sparse_labels.detach().cpu(), connected_1, CNN_features, image_height, image_width)
@@ -580,7 +580,7 @@ if __name__ == "__main__":
             scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.1, patience=1, min_lr = 0.0001)
             best_clusters = optimize_spix(criterion, optimizer, scheduler,  norm_val_x=norm_val_x, norm_val_y=norm_val_y, num_iterations=num_iterations)
             best_members = members_from_clusters(sigma_xy, sigma_cnn, XY_features, CNN_features, best_clusters)
-            connected = hard(torch.squeeze(torch.argmax(best_members, 2)), h, w, k, connectivity = True)  # connectivity=True normally                       # shape = [H, W]
+            connected = enforce_connectivity(torch.squeeze(torch.argmax(best_members, 2)), h, w, k, connectivity = True)  # connectivity=True normally                       # shape = [H, W]
             propagated_full = prop_to_unlabelled_spix_feat(sparse_labels.detach().cpu(), connected, CNN_features, image_height, image_width)
 
         # Whether using an ensemble or not, we now have a propagated mask
