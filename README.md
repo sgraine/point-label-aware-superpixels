@@ -30,13 +30,6 @@ Point Label Aware Superpixels for Multi-species Segmentation of Underwater Image
 We suggest using the Mamba (or Anaconda) package manager to install dependencies.
 
 1. Download Mamba
-2. Download and save the provided spix_environment.yml file in your directory
-3. Create the environment using:
-```conda env create -f spix_environment.yml ```
-
-**Alternative Method**
-
-1. Download Mamba
 2. Create a mamba environment: 
 
 ```mamba create -n pointlabelspix python pytorch matplotlib scikit-image scipy torchmetrics -c conda-forge ```
