@@ -1,6 +1,7 @@
 # SSN definition script
 # This script just needed to build the feature extractor
-# Comes from original SSN paper
+# Pytorch implementation from: https://github.com/andrewsonga/ssn_pytorch
+# Original paper is: https://varunjampani.github.io/ssn/
 
 import torch
 import torch.nn as nn
