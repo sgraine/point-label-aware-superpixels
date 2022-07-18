@@ -1,7 +1,7 @@
 # Repository for Point Label Aware Superpixels
 The official repository for the paper: 'Point Label Aware Superpixels for Multi-species Segmentation of Underwater Imagery'
 
-\[[arXiv](https://arxiv.org/abs/2202.134874)]  \[IEEE Xplore](https://ieeexplore.ieee.org/document/9813385)]  \[[YouTube](https://youtu.be/elPAOIVZl-c)]
+\[[arXiv](https://arxiv.org/abs/2202.134874)]  \[[IEEE Xplore](https://ieeexplore.ieee.org/document/9813385)]  \[[YouTube](https://youtu.be/elPAOIVZl-c)]
 
 Our approach contributes to the field of segmentation of underwater imagery by enabling generation of dense, pixel-wise ground truth masks for training a model to perform semantic segmentation.  Many coral datasets are accompanied by sparse, randomly distributed point labels.  Our approach leverages the deep features at each pixel as well as the locations of the point labels to generate superpixels which conform to complex coral boundaries and encompass single species regions.  If this repository contributes to your research, please consider citing the publication below.
 
