@@ -1,23 +1,25 @@
 # Repository for Point Label Aware Superpixels
 The official repository for the paper: 'Point Label Aware Superpixels for Multi-species Segmentation of Underwater Imagery'
 
-\[[arXiv](https://arxiv.org/abs/2202.134874)]   \[[YouTube](https://youtu.be/elPAOIVZl-c)]
+\[[arXiv](https://arxiv.org/abs/2202.134874)]  \[IEEE Xplore](https://ieeexplore.ieee.org/document/9813385)]  \[[YouTube](https://youtu.be/elPAOIVZl-c)]
 
 Our approach contributes to the field of segmentation of underwater imagery by enabling generation of dense, pixel-wise ground truth masks for training a model to perform semantic segmentation.  Many coral datasets are accompanied by sparse, randomly distributed point labels.  Our approach leverages the deep features at each pixel as well as the locations of the point labels to generate superpixels which conform to complex coral boundaries and encompass single species regions.  If this repository contributes to your research, please consider citing the publication below.
 
 ```
-Scarlett Raine and Ross Marchant and Brano Kusy and Frederic Maire and Tobias Fischer (2022). 
-Point Label Aware Superpixels for Multi-species Segmentation of Underwater Imagery.  Under Review for RAL and IROS.
+S. Raine, R. Marchant, B. Kusy, F. Maire and T. Fischer, "Point Label Aware Superpixels for Multi-Species Segmentation of Underwater Imagery," in IEEE Robotics and Automation Letters, vol. 7, no. 3, pp. 8291-8298, July 2022, doi: 10.1109/LRA.2022.3187836.
 ```
 
 ### Bibtex
 ```
-@article{raine2022point,
-  title={Point Label Aware Superpixels for Multi-species Segmentation of Underwater Imagery},
+@ARTICLE{9813385,
   author={Raine, Scarlett and Marchant, Ross and Kusy, Brano and Maire, Frederic and Fischer, Tobias},
-  journal={arXiv preprint arXiv:2202.13487},
-  year={2022}
-}
+  journal={IEEE Robotics and Automation Letters}, 
+  title={Point Label Aware Superpixels for Multi-Species Segmentation of Underwater Imagery}, 
+  year={2022},
+  volume={7},
+  number={3},
+  pages={8291-8298},
+  doi={10.1109/LRA.2022.3187836}}
 
 ```
 ## Table of Contents
