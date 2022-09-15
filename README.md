@@ -9,6 +9,9 @@ Our approach contributes to the field of segmentation of underwater imagery by e
 S. Raine, R. Marchant, B. Kusy, F. Maire and T. Fischer, "Point Label Aware Superpixels for Multi-Species Segmentation of Underwater Imagery," in IEEE Robotics and Automation Letters, vol. 7, no. 3, pp. 8291-8298, July 2022, doi: 10.1109/LRA.2022.3187836.
 ```
 
+https://user-images.githubusercontent.com/50187455/190310353-a74940b6-ce3a-4b58-8b62-abca52391ae0.mp4
+
+
 ### Bibtex
 ```
 @ARTICLE{9813385,
